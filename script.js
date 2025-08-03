@@ -1,380 +1,366 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Цветовая палитра
-  const colors = {
-    primary: '#6C5CE7',
-    secondary: '#00B894',
-    accent: '#FD79A8',
-    dark: '#2D3436',
-    light: '#F5F6FA'
-  };
+    // Основные цвета
+    const colorPalette = [
+        '#10367D', // Основной синий
+        '#2D4D9E', 
+        '#4A64BF',
+        '#677BDF',
+        '#FF6B6B', // Красный
+        '#FF8E8E',
+        '#4ECDC4', // Бирюзовый
+        '#7EDFD8',
+        '#A05195', // Фиолетовый
+        '#C27BB3',
+        '#FDCB6E', // Жёлтый
+        '#FFEAA7'
+    ];
 
-  // Элементы
-  const mainScreen = document.getElementById('mainScreen');
-  const startBtn = document.getElementById('startBtn');
-  const registrationForm = document.getElementById('registrationForm');
-  
-  // Проверяем сохранённый профиль
-  const savedProfile = localStorage.getItem('datingProfile');
-  if (savedProfile) {
-    showProfile(JSON.parse(savedProfile));
-    return;
-  }
-
-  // Данные пользователя
-  const userData = {
-    name: '',
-    age: '',
-    city: '',
-    interests: [],
-    moodColor: colors.primary,
-    avatar: null,
-    createdAt: new Date().toISOString()
-  };
-
-  let currentStep = 1;
-  const totalSteps = 6;
-
-  // Инициализация
-  startBtn.addEventListener('click', startRegistration);
-
-  function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  }
-
-  function forceFocus(element) {
-    if (!isMobile()) return;
+    // Элементы
+    const mainScreen = document.getElementById('mainScreen');
+    const startBtn = document.getElementById('startBtn');
+    const registrationForm = document.getElementById('registrationForm');
     
-    // Создаем невидимое поле ввода
-    const fakeInput = document.createElement('input');
-    fakeInput.style.position = 'absolute';
-    fakeInput.style.opacity = '0';
-    fakeInput.style.height = '0';
-    fakeInput.style.width = '0';
-    fakeInput.style.padding = '0';
-    fakeInput.style.margin = '0';
-    fakeInput.style.border = 'none';
-    
-    document.body.appendChild(fakeInput);
-    fakeInput.focus();
-    
-    setTimeout(() => {
-      element.focus();
-      document.body.removeChild(fakeInput);
-    }, 100);
-  }
-
-  function startRegistration() {
-    mainScreen.classList.add('hidden');
-    registrationForm.classList.remove('hidden');
-    loadRegistrationForm();
-    
-    // Для мобильных - добавляем класс при открытии клавиатуры
-    if (isMobile()) {
-      document.body.classList.add('keyboard-open');
+    // Проверяем сохранённый профиль
+    const savedProfile = localStorage.getItem('datingProfile');
+    if (savedProfile) {
+        showProfile(JSON.parse(savedProfile));
+        return;
     }
-  }
 
-  function loadRegistrationForm() {
-    registrationForm.innerHTML = `
-      <div class="form-step active" data-step="1">
-        <h2>Как вас зовут?</h2>
-        <input type="text" class="input-field" id="userName" placeholder="Ваше имя" required>
-        <button class="btn next-step">Далее</button>
-      </div>
+    // Данные пользователя
+    const userData = {
+        name: '',
+        age: '',
+        city: '',
+        interests: [],
+        moodColor: '#10367D',
+        avatar: null,
+        createdAt: new Date().toISOString()
+    };
 
-      <div class="form-step" data-step="2">
-        <h2>Сколько вам лет?</h2>
-        <input type="number" class="input-field" id="userAge" min="18" max="100" placeholder="Ваш возраст" required>
-        <div class="navigation">
-          <button class="btn prev-step">Назад</button>
-          <button class="btn next-step">Далее</button>
-        </div>
-      </div>
+    let currentStep = 1;
+    const totalSteps = 6;
 
-      <div class="form-step" data-step="3">
-        <h2>Ваш город</h2>
-        <input type="text" class="input-field" id="userCity" placeholder="Где вы живете?" required>
-        <div class="navigation">
-          <button class="btn prev-step">Назад</button>
-          <button class="btn next-step">Далее</button>
-        </div>
-      </div>
+    // Инициализация
+    startBtn.addEventListener('click', startRegistration);
 
-      <div class="form-step" data-step="4">
-        <h2>Что вам нравится?</h2>
-        <p class="hint">Выберите 1-3 варианта</p>
-        <div class="tags-container">
-          <div class="tag" data-interest="music">🎵 Музыка</div>
-          <div class="tag" data-interest="sports">⚽ Спорт</div>
-          <div class="tag" data-interest="books">📚 Книги</div>
-          <div class="tag" data-interest="travel">✈️ Путешествия</div>
-          <div class="tag" data-interest="art">🎨 Искусство</div>
-          <div class="tag" data-interest="games">🎮 Игры</div>
-        </div>
-        <div class="navigation">
-          <button class="btn prev-step">Назад</button>
-          <button class="btn next-step">Далее</button>
-        </div>
-      </div>
+    function startRegistration() {
+        mainScreen.style.opacity = 0;
+        setTimeout(() => {
+            mainScreen.classList.add('hidden');
+            registrationForm.classList.remove('hidden');
+            loadRegistrationForm();
+            setTimeout(() => {
+                registrationForm.style.opacity = 1;
+                // Фокус на первое поле
+                const firstInput = document.getElementById('userName');
+                if (firstInput) firstInput.focus();
+            }, 50);
+        }, 500);
+    }
 
-      <div class="form-step" data-step="5">
-        <h2>Ваш любимый цвет</h2>
-        <div class="colors-container">
-          <div class="color-option" style="background: ${colors.primary};" data-color="${colors.primary}"></div>
-          <div class="color-option" style="background: ${colors.secondary};" data-color="${colors.secondary}"></div>
-          <div class="color-option" style="background: ${colors.accent};" data-color="${colors.accent}"></div>
-          <div class="color-option" style="background: #FDCB6E;" data-color="#FDCB6E"></div>
-        </div>
-        <div class="navigation">
-          <button class="btn prev-step">Назад</button>
-          <button class="btn next-step">Далее</button>
-        </div>
-      </div>
+    function loadRegistrationForm() {
+        registrationForm.innerHTML = `
+            <div class="form-step active" data-step="1">
+                <h2>Как вас зовут?</h2>
+                <input type="text" class="input-field" id="userName" placeholder="Ваше имя" required>
+                <div class="navigation">
+                    <button class="btn next-step">Далее</button>
+                </div>
+            </div>
 
-      <div class="form-step" data-step="6">
-        <h2>Ваше фото</h2>
-        <p class="hint">Можно добавить позже</p>
-        <div class="avatar-upload">
-          <label class="btn">
-            📸 Выбрать фото
-            <input type="file" id="avatarUpload" accept="image/*" hidden>
-          </label>
-          <div class="avatar-preview hidden" id="avatarPreview"></div>
-        </div>
-        <div class="navigation">
-          <button class="btn prev-step">Назад</button>
-          <button class="btn" id="completeBtn">Сохранить профиль</button>
-        </div>
-      </div>
-    `;
+            <div class="form-step" data-step="2">
+                <h2>Сколько вам лет?</h2>
+                <input type="number" class="input-field" id="userAge" min="18" max="100" placeholder="Ваш возраст" required>
+                <div class="navigation">
+                    <button class="btn prev-step">Назад</button>
+                    <button class="btn next-step">Далее</button>
+                </div>
+            </div>
 
-    initFormHandlers();
-    
-    // Автофокус на первое поле
-    setTimeout(() => {
-      const firstInput = document.getElementById('userName');
-      if (isMobile()) {
-        forceFocus(firstInput);
-      } else {
-        firstInput.focus();
-      }
-    }, 300);
-  }
+            <div class="form-step" data-step="3">
+                <h2>Ваш город</h2>
+                <input type="text" class="input-field" id="userCity" placeholder="Где вы живете?" required>
+                <div class="navigation">
+                    <button class="btn prev-step">Назад</button>
+                    <button class="btn next-step">Далее</button>
+                </div>
+            </div>
 
-  function initFormHandlers() {
-    // Навигация
-    document.querySelectorAll('.next-step').forEach(btn => {
-      btn.addEventListener('click', goToNextStep);
-    });
+            <div class="form-step" data-step="4">
+                <h2>Что вам нравится?</h2>
+                <p>Выберите 1-3 варианта</p>
+                <div class="tags-container">
+                    <div class="tag" data-interest="music">🎵 Музыка</div>
+                    <div class="tag" data-interest="sports">⚽ Спорт</div>
+                    <div class="tag" data-interest="books">📚 Книги</div>
+                    <div class="tag" data-interest="travel">✈️ Путешествия</div>
+                    <div class="tag" data-interest="art">🎨 Искусство</div>
+                    <div class="tag" data-interest="games">🎮 Игры</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn prev-step">Назад</button>
+                    <button class="btn next-step">Далее</button>
+                </div>
+            </div>
 
-    document.querySelectorAll('.prev-step').forEach(btn => {
-      btn.addEventListener('click', goToPrevStep);
-    });
+            <div class="form-step" data-step="5">
+                <h2>Ваш любимый цвет</h2>
+                <div class="colors-container">
+                    ${colorPalette.map(color => `
+                        <div class="color-option" style="background: ${color}" data-color="${color}"></div>
+                    `).join('')}
+                </div>
+                <div class="navigation">
+                    <button class="btn prev-step">Назад</button>
+                    <button class="btn next-step">Далее</button>
+                </div>
+            </div>
 
-    // Интересы
-    document.querySelectorAll('.tag').forEach(tag => {
-      tag.addEventListener('click', function() {
-        const interest = this.dataset.interest;
-        if (this.classList.contains('selected')) {
-          this.classList.remove('selected');
-          userData.interests = userData.interests.filter(i => i !== interest);
-        } else {
-          if (userData.interests.length < 3) {
-            this.classList.add('selected');
-            userData.interests.push(interest);
-          } else {
-            alert('Можно выбрать не более 3 интересов');
-          }
-        }
-      });
-    });
+            <div class="form-step" data-step="6">
+                <h2>Ваше фото</h2>
+                <p>Добавьте фото для профиля (необязательно)</p>
+                <div class="avatar-upload">
+                    <label class="btn">
+                        📸 Выбрать фото
+                        <input type="file" id="avatarUpload" accept="image/*" hidden>
+                    </label>
+                    <div class="avatar-preview hidden" id="avatarPreview"></div>
+                </div>
+                <div class="navigation">
+                    <button class="btn prev-step">Назад</button>
+                    <button class="btn" id="completeBtn">Сохранить профиль</button>
+                </div>
+            </div>
+        `;
 
-    // Цвета
-    document.querySelectorAll('.color-option').forEach(color => {
-      color.addEventListener('click', function() {
-        document.querySelectorAll('.color-option').forEach(c => {
-          c.style.transform = 'scale(1)';
-          c.style.boxShadow = 'none';
+        initFormHandlers();
+    }
+
+    function initFormHandlers() {
+        // Навигация
+        document.querySelectorAll('.next-step').forEach(btn => {
+            btn.addEventListener('click', goToNextStep);
         });
 
-        this.style.transform = 'scale(1.1)';
-        this.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
-        userData.moodColor = this.dataset.color;
-        updateThemeColor(this.dataset.color);
-      });
-    });
+        document.querySelectorAll('.prev-step').forEach(btn => {
+            btn.addEventListener('click', goToPrevStep);
+        });
 
-    // Аватар
-    document.getElementById('avatarUpload')?.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file && file.type.match('image.*')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          userData.avatar = e.target.result;
-          const preview = document.getElementById('avatarPreview');
-          preview.style.backgroundImage = `url(${e.target.result})`;
-          preview.classList.remove('hidden');
+        // Интересы
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const interest = this.dataset.interest;
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    userData.interests = userData.interests.filter(i => i !== interest);
+                } else {
+                    if (userData.interests.length < 3) {
+                        this.classList.add('selected');
+                        userData.interests.push(interest);
+                    } else {
+                        alert('Можно выбрать не более 3 интересов');
+                    }
+                }
+            });
+        });
+
+        // Цвета
+        document.querySelectorAll('.color-option').forEach(color => {
+            color.addEventListener('click', function() {
+                document.querySelectorAll('.color-option').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                userData.moodColor = this.dataset.color;
+            });
+        });
+
+        // Аватар
+        document.getElementById('avatarUpload')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.match('image.*')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userData.avatar = e.target.result;
+                    const preview = document.getElementById('avatarPreview');
+                    preview.style.backgroundImage = `url(${e.target.result})`;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Сохранение
+        document.getElementById('completeBtn')?.addEventListener('click', completeRegistration);
+
+        // Обработка нажатия Enter
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    goToNextStep();
+                }
+            });
+        });
+    }
+
+    function goToNextStep() {
+        if (!validateStep(currentStep)) return;
+        saveStepData(currentStep);
+
+        document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep++;
+        const nextStep = document.querySelector(`[data-step="${currentStep}"]`);
+        if (nextStep) {
+            nextStep.classList.add('active');
+            nextStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Фокус на следующее поле
+            setTimeout(() => {
+                const nextInput = nextStep.querySelector('input');
+                if (nextInput) nextInput.focus();
+            }, 300);
+        }
+    }
+
+    function goToPrevStep() {
+        document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep--;
+        const prevStep = document.querySelector(`[data-step="${currentStep}"]`);
+        if (prevStep) {
+            prevStep.classList.add('active');
+            prevStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function validateStep(step) {
+        switch(step) {
+            case 1:
+                if (!document.getElementById('userName')?.value.trim()) {
+                    alert('Пожалуйста, введите ваше имя');
+                    return false;
+                }
+                return true;
+            case 2:
+                const age = parseInt(document.getElementById('userAge')?.value);
+                if (isNaN(age) || age < 18 || age > 100) {
+                    alert('Пожалуйста, введите корректный возраст (от 18 до 100)');
+                    return false;
+                }
+                return true;
+            case 3:
+                if (!document.getElementById('userCity')?.value.trim()) {
+                    alert('Пожалуйста, укажите ваш город');
+                    return false;
+                }
+                return true;
+            case 4:
+                if (userData.interests.length === 0) {
+                    alert('Пожалуйста, выберите хотя бы один интерес');
+                    return false;
+                }
+                return true;
+            case 5:
+                if (!userData.moodColor) {
+                    alert('Пожалуйста, выберите цвет');
+                    return false;
+                }
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    function saveStepData(step) {
+        switch(step) {
+            case 1:
+                userData.name = document.getElementById('userName')?.value.trim() || '';
+                break;
+            case 2:
+                userData.age = document.getElementById('userAge')?.value || '';
+                break;
+            case 3:
+                userData.city = document.getElementById('userCity')?.value.trim() || '';
+                break;
+        }
+    }
+
+    function completeRegistration() {
+        if (!validateStep(currentStep)) return;
+        saveStepData(currentStep);
+
+        // Сохраняем профиль
+        localStorage.setItem('datingProfile', JSON.stringify(userData));
+        showProfile(userData);
+    }
+
+    function showProfile(profileData) {
+        registrationForm.classList.add('hidden');
+        
+        const profileHTML = `
+            <div class="profile-card">
+                <div class="avatar-preview ${profileData.avatar ? 'has-image' : ''}" 
+                     style="background-image: url(${profileData.avatar || ''});"></div>
+                <h2 class="profile-name">${profileData.name}</h2>
+                <p class="profile-age">${profileData.age} лет</p>
+                <div class="profile-city">${profileData.city}</div>
+                
+                <div class="profile-interests">
+                    ${profileData.interests.map(interest => `
+                        <div class="interest-tag">${getInterestEmoji(interest)} ${getInterestName(interest)}</div>
+                    `).join('')}
+                </div>
+                
+                <div class="profile-footer">
+                    Профиль создан: ${new Date(profileData.createdAt).toLocaleDateString()}
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="btn" id="editProfileBtn">Редактировать</button>
+                <button class="btn" id="newProfileBtn">Новый профиль</button>
+            </div>
+        `;
+        
+        mainScreen.innerHTML = profileHTML;
+        mainScreen.classList.remove('hidden');
+        mainScreen.style.opacity = 1;
+
+        // Кнопка редактирования
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
+            Object.assign(userData, profileData);
+            startRegistration();
+        });
+
+        // Кнопка нового профиля
+        document.getElementById('newProfileBtn').addEventListener('click', () => {
+            localStorage.removeItem('datingProfile');
+            location.reload();
+        });
+    }
+
+    // Вспомогательные функции
+    function getInterestEmoji(interest) {
+        const emojis = {
+            music: '🎵',
+            sports: '⚽',
+            books: '📚',
+            travel: '✈️',
+            art: '🎨',
+            games: '🎮'
         };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Сохранение
-    document.getElementById('completeBtn')?.addEventListener('click', completeRegistration);
-  }
-
-  function updateThemeColor(color) {
-    document.documentElement.style.setProperty('--primary', color);
-  }
-
-  function goToNextStep() {
-    if (!validateStep(currentStep)) return;
-    saveStepData(currentStep);
-
-    document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
-    currentStep++;
-    const nextStep = document.querySelector(`[data-step="${currentStep}"]`);
-    nextStep.classList.add('active');
-    
-    // Автофокус на следующее поле
-    setTimeout(() => {
-      const nextInput = nextStep.querySelector('input, .tags-container, .colors-container, #avatarUpload');
-      if (nextInput) {
-        if (isMobile()) {
-          forceFocus(nextInput);
-        } else {
-          nextInput.focus();
-        }
-      }
-    }, 200);
-  }
-
-  function goToPrevStep() {
-    document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
-    currentStep--;
-    document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
-  }
-
-  function validateStep(step) {
-    switch(step) {
-      case 1:
-        if (!document.getElementById('userName').value.trim()) {
-          alert('Пожалуйста, введите ваше имя');
-          return false;
-        }
-        return true;
-      case 2:
-        const age = parseInt(document.getElementById('userAge').value);
-        if (isNaN(age) || age < 18 || age > 100) {
-          alert('Пожалуйста, введите корректный возраст (от 18 до 100)');
-          return false;
-        }
-        return true;
-      case 3:
-        if (!document.getElementById('userCity').value.trim()) {
-          alert('Пожалуйста, укажите ваш город');
-          return false;
-        }
-        return true;
-      case 4:
-        if (userData.interests.length === 0) {
-          alert('Пожалуйста, выберите хотя бы один интерес');
-          return false;
-        }
-        return true;
-      default:
-        return true;
+        return emojis[interest] || '❤️';
     }
-  }
 
-  function saveStepData(step) {
-    switch(step) {
-      case 1:
-        userData.name = document.getElementById('userName').value.trim();
-        break;
-      case 2:
-        userData.age = document.getElementById('userAge').value;
-        break;
-      case 3:
-        userData.city = document.getElementById('userCity').value.trim();
-        break;
+    function getInterestName(interest) {
+        const names = {
+            music: 'Музыка',
+            sports: 'Спорт',
+            books: 'Книги',
+            travel: 'Путешествия',
+            art: 'Искусство',
+            games: 'Игры'
+        };
+        return names[interest] || interest;
     }
-  }
-
-  function completeRegistration() {
-    if (!validateStep(currentStep)) return;
-    saveStepData(currentStep);
-
-    // Сохраняем профиль
-    localStorage.setItem('datingProfile', JSON.stringify(userData));
-    showProfile(userData);
-  }
-
-  function showProfile(profileData) {
-    registrationForm.classList.add('hidden');
-    
-    const profileHTML = `
-      <div class="profile-card">
-        <div class="avatar-preview" style="background-image: url(${profileData.avatar || 'https://i.imgur.com/JiZw5QK.png'});"></div>
-        <h2 class="profile-name">${profileData.name}</h2>
-        <p class="profile-age">${profileData.age} лет</p>
-        <div class="profile-city">${profileData.city}</div>
-        
-        <div class="profile-interests">
-          ${profileData.interests.map(interest => `
-            <div class="interest-tag">${getInterestEmoji(interest)} ${getInterestName(interest)}</div>
-          `).join('')}
-        </div>
-        
-        <div class="profile-footer">
-          Профиль создан: ${new Date(profileData.createdAt).toLocaleDateString()}
-        </div>
-      </div>
-      
-      <div class="navigation">
-        <button class="btn" id="editProfileBtn">Редактировать</button>
-        <button class="btn" id="newProfileBtn">Новый профиль</button>
-      </div>
-    `;
-    
-    mainScreen.innerHTML = profileHTML;
-    mainScreen.classList.remove('hidden');
-
-    // Кнопка редактирования
-    document.getElementById('editProfileBtn').addEventListener('click', () => {
-      Object.assign(userData, profileData);
-      startRegistration();
-    });
-
-    // Кнопка нового профиля
-    document.getElementById('newProfileBtn').addEventListener('click', () => {
-      localStorage.removeItem('datingProfile');
-      location.reload();
-    });
-  }
-
-  // Вспомогательные функции
-  function getInterestEmoji(interest) {
-    const emojis = {
-      music: '🎵',
-      sports: '⚽',
-      books: '📚',
-      travel: '✈️',
-      art: '🎨',
-      games: '🎮'
-    };
-    return emojis[interest] || '❤️';
-  }
-
-  function getInterestName(interest) {
-    const names = {
-      music: 'Музыка',
-      sports: 'Спорт',
-      books: 'Книги',
-      travel: 'Путешествия',
-      art: 'Искусство',
-      games: 'Игры'
-    };
-    return names[interest] || interest;
-  }
 });
