@@ -11,10 +11,10 @@
 </head>
 <body>
     <div class="screen main-screen" id="mainScreen">
-        <div class="logo">
-            <svg viewBox="0 0 100 100">
-                <path d="M20,50 Q35,20 50,50 T80,50" 
-                      stroke="currentColor" 
+        <div class="logo-container">
+            <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path class="logo-path" d="M20,50 Q35,20 50,50 T80,50" 
+                      stroke="#10367D" 
                       stroke-width="8" 
                       fill="none" 
                       stroke-linecap="round"/>
@@ -22,7 +22,7 @@
         </div>
         <h1>ТочкаСхода</h1>
         <p>Место, где пересекаются ваши пути</p>
-        <button class="btn" id="startBtn">Начать знакомства</button>
+        <button class="btn pulse" id="startBtn">Начать знакомства</button>
     </div>
 
     <div class="screen registration-form hidden" id="registrationForm"></div>
