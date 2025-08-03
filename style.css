@@ -228,3 +228,34 @@ h1 {
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
+
+/* Мобильные стили */
+@media (max-width: 768px) {
+  .input-field {
+    font-size: 16px !important; /* Фикс для iOS */
+    padding: 16px 15px !important;
+  }
+  
+  .btn {
+    padding: 16px 24px !important;
+  }
+  
+  body {
+    padding: 15px !important;
+    align-items: flex-start !important;
+  }
+  
+  .screen {
+    padding-top: 30px !important;
+  }
+}
+
+/* Анимация появления клавиатуры */
+@keyframes slideUp {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20vh); }
+}
+
+.keyboard-open {
+  animation: slideUp 0.3s forwards;
+}
