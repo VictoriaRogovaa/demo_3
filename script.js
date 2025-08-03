@@ -5,8 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     secondary: '#00B894',
     accent: '#FD79A8',
     dark: '#2D3436',
-    light: '#F5F6FA',
-    white: '#FFFFFF'
+    light: '#F5F6FA'
   };
 
   // Элементы
@@ -38,16 +37,41 @@ document.addEventListener('DOMContentLoaded', function() {
   // Инициализация
   startBtn.addEventListener('click', startRegistration);
 
-  function startRegistration() {
-    mainScreen.style.opacity = 0;
+  function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  function forceFocus(element) {
+    if (!isMobile()) return;
+    
+    // Создаем невидимое поле ввода
+    const fakeInput = document.createElement('input');
+    fakeInput.style.position = 'absolute';
+    fakeInput.style.opacity = '0';
+    fakeInput.style.height = '0';
+    fakeInput.style.width = '0';
+    fakeInput.style.padding = '0';
+    fakeInput.style.margin = '0';
+    fakeInput.style.border = 'none';
+    
+    document.body.appendChild(fakeInput);
+    fakeInput.focus();
+    
     setTimeout(() => {
-      mainScreen.classList.add('hidden');
-      registrationForm.classList.remove('hidden');
-      loadRegistrationForm();
-      setTimeout(() => {
-        registrationForm.style.opacity = 1;
-      }, 50);
-    }, 500);
+      element.focus();
+      document.body.removeChild(fakeInput);
+    }, 100);
+  }
+
+  function startRegistration() {
+    mainScreen.classList.add('hidden');
+    registrationForm.classList.remove('hidden');
+    loadRegistrationForm();
+    
+    // Для мобильных - добавляем класс при открытии клавиатуры
+    if (isMobile()) {
+      document.body.classList.add('keyboard-open');
+    }
   }
 
   function loadRegistrationForm() {
@@ -125,6 +149,16 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
 
     initFormHandlers();
+    
+    // Автофокус на первое поле
+    setTimeout(() => {
+      const firstInput = document.getElementById('userName');
+      if (isMobile()) {
+        forceFocus(firstInput);
+      } else {
+        firstInput.focus();
+      }
+    }, 300);
   }
 
   function initFormHandlers() {
@@ -141,18 +175,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.tag').forEach(tag => {
       tag.addEventListener('click', function() {
         const interest = this.dataset.interest;
-        const index = userData.interests.indexOf(interest);
-
-        if (index === -1) {
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          userData.interests = userData.interests.filter(i => i !== interest);
+        } else {
           if (userData.interests.length < 3) {
             this.classList.add('selected');
             userData.interests.push(interest);
           } else {
             alert('Можно выбрать не более 3 интересов');
           }
-        } else {
-          this.classList.remove('selected');
-          userData.interests.splice(index, 1);
         }
       });
     });
@@ -201,7 +233,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
     currentStep++;
-    document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+    const nextStep = document.querySelector(`[data-step="${currentStep}"]`);
+    nextStep.classList.add('active');
+    
+    // Автофокус на следующее поле
+    setTimeout(() => {
+      const nextInput = nextStep.querySelector('input, .tags-container, .colors-container, #avatarUpload');
+      if (nextInput) {
+        if (isMobile()) {
+          forceFocus(nextInput);
+        } else {
+          nextInput.focus();
+        }
+      }
+    }, 200);
   }
 
   function goToPrevStep() {
@@ -294,7 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     mainScreen.innerHTML = profileHTML;
     mainScreen.classList.remove('hidden');
-    mainScreen.style.opacity = 1;
 
     // Кнопка редактирования
     document.getElementById('editProfileBtn').addEventListener('click', () => {
