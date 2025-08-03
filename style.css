@@ -1,0 +1,230 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  --primary: #6C5CE7;
+  --secondary: #00B894;
+  --accent: #FD79A8;
+  --dark: #2D3436;
+  --light: #F5F6FA;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.screen {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.5s ease;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Главный экран */
+.main-screen {
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 0.8s 0.3s forwards;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.logo svg {
+  width: 100%;
+  height: 100%;
+  color: var(--primary);
+  animation: pulse 3s infinite;
+}
+
+h1 {
+  font-size: 2.2rem;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 30px;
+  font-weight: 500;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+}
+
+/* Форма регистрации */
+.registration-form {
+  width: 100%;
+}
+
+.form-step {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-step.active {
+  display: flex;
+  animation: fadeIn 0.5s;
+}
+
+.input-field {
+  width: 100%;
+  padding: 15px;
+  margin: 15px 0;
+  border: 2px solid #dfe6e9;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.tag {
+  background: #dfe6e9;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tag.selected {
+  background: var(--primary);
+  color: white;
+}
+
+.colors-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin: 25px 0;
+}
+
+.color-option {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid transparent;
+}
+
+.color-option.selected {
+  border-color: var(--dark);
+  transform: scale(1.1);
+}
+
+.avatar-upload {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 15px auto;
+  background-size: cover;
+  background-position: center;
+  border: 5px solid var(--primary);
+}
+
+.navigation {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+/* Профиль */
+.profile-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.profile-name {
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin: 15px 0 5px;
+}
+
+.profile-age {
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.profile-city {
+  display: inline-block;
+  background: #dfe6e9;
+  padding: 5px 15px;
+  border-radius: 50px;
+  margin: 15px 0;
+}
+
+.profile-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.interest-tag {
+  background: var(--accent);
+  color: white;
+  padding: 6px 15px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
